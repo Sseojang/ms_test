@@ -5,7 +5,7 @@ void	ft_print(char *line)
 	printf("%s", line);
 }
 
-int	ft_export_check(char *line, int i)
+int	ft_export_check(char *line, int i, char **envp)
 {
 	char	*temp;
 	int		first_num;
@@ -16,6 +16,20 @@ int	ft_export_check(char *line, int i)
 		if (line[i] == ' ' || line[i] == '\t')
 			temp = ft_substr(line, first_num, i);
 	}
+	int	i;
+	int	j;
+	i = 0;
+	j = 0;
+	while (envp[i])
+	{
+		if (envp[i][0] == temp [0])
+		{
+			if (ft_strcmp(envp[i], temp) == 0);
+				return ()//변수 존재
+		}
+		i++;
+	}
+	return () //변수 없음
 }
 
 int	ft_double_qoute(char *line, int i)
