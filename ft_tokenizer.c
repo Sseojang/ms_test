@@ -5,53 +5,95 @@ void	ft_print(char *line)
 	printf("%s", line);
 }
 
-void	ft_find_pipe(char *line)
+int	ft_export_check(char *line, int i)
 {
-	int i;
-	int num;
-	int	len;
-	char *temp;
-	int pipe_flag;
+	char	*temp;
+	int		first_num;
 
-
-	i = 0;
-	num = 0;
-	len = 0;
-	pipe_flag = 0;
-	temp = NULL;
+	first_num = i;
 	while (line[i])
 	{
-		if (line[i] == '|' || (line[i + 1] == '\0' && pipe_flag  == 1))
+		if (line[i] == ' ' || line[i] == '\t')
+			temp = ft_substr(line, first_num, i);
+	}
+}
+
+int	ft_double_qoute(char *line, int i)
+{
+	i++;
+	int	d_qoute_flag;
+
+	d_qoute_flag = 1;
+	while (line[i])
+	{
+		if (line[i] == '$')
 		{
-			temp = ft_substr(line, num, i);
-			num = i;
-			pipe_flag++;
-			ft_print(temp);
-			temp = NULL;
+			ft_export_check();
+		}
+		if (line[i] == 34)
+			return (i);
+	}
+	if (d_qoute_flag)
+		return (-1);
+	else
+		return (i);
+}
+
+int	ft_single_qoute(char *line, int i)
+{
+	i++;
+	int	s_qoute_flag;
+
+	s_qoute_flag = 1;
+	while (line[i])
+	{
+		if (line[i] == 39)
+			return (i);
+		i++;
+	}
+	if (s_qoute_flag)
+		return (-1);
+	else
+		return (i);
+}
+
+void	ft_qoute_check(char *line)
+{
+	int	i;
+	int	s_qoute_flag;
+	int	d_qoute_flag;
+
+	i = 0;
+	s_qoute_flag = 0;
+	d_qoute_flag = 0;
+	while (line[i])
+	{
+		if (line[i] == 39) //싱글 쿼트
+		{
+			i = ft_single_qoute(line, i);
+		}
+		if (line[i] == 34) //더블 쿼트
+		{
+			i = ft_double_qoute(line, i);
 		}
 		i++;
 	}
-	if (!pipe_flag)
-		printf("%s", line);
-	printf("\n");
 }
 
-int		ft_qoute_check(char *line)
-{
-	int	i;
-	int	qoute_flag;
-
-	i = 0;
-	qoute_flag == 0;
-	while (line[i])
-	{
-		if (line)
-	}
-	return (0);
-}
+		// if (ft_meta == 3) // '<'
+		// {
+		// 	ft_in_here(line, i);
+		// }
+		// if (ft_meta == 4) // '>'
+		// {
+		// 	ft_out_next(line, i);
+		// }
+		// if (ft_meta == 5) // '|'
+		// if (ft_meta == 6) // '$'
 
 void	ft_tokenizer(char *line)
 {
+	//ft_qoute_check(line);
+	// ft_find_pipe(line);
 	ft_qoute_check(line);
-	ft_find_pipe(line);
 }

@@ -6,7 +6,7 @@
 #    By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/15 09:48:53 by seojang           #+#    #+#              #
-#    Updated: 2024/09/04 21:38:53 by seojang          ###   ########.fr        #
+#    Updated: 2024/09/05 17:35:24 by seojang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,8 @@ RM = rm -rf
 
 SRC = main.c \
 	ft_tokenizer.c \
+	ft_split.c \
+	ft_split_utils.c \
 	ft_utils.c
 
 HEADER = ms_test.h
@@ -36,7 +38,7 @@ $(NAME) : $(OBJ)
 	$(CC) -lreadline $(OBJ) -o $@
 
 %.o : %.c
-	$(CC) -lreadline -c $< -o $@
+	$(CC) -c $< -o $@
 	
 clean :
 	$(RM) $(OBJ)
