@@ -5,7 +5,7 @@
 // 	exit(0);
 // }
 
-int main(void)
+int main(char **envp)
 {
 	char *line;
 	char *temp;
@@ -16,7 +16,7 @@ int main(void)
 	{
 		line = readline("minishell>");
 		if (line)
-			ft_tokenizer(line);
+			ft_tokenizer(line, envp);
 		add_history(line);
 		free(line);
 	}

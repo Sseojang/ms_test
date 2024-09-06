@@ -25,7 +25,7 @@ typedef struct s_word
 	const char	*end;
 }			t_word;
 
-void	ft_tokenizer(char *line);
+void	ft_tokenizer(char *line, char **envp);
 void	ft_print(char *line);
 void	ft_find_pipe(char *line);
 
