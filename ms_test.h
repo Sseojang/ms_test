@@ -26,8 +26,6 @@ typedef struct s_word
 }			t_word;
 
 void	ft_tokenizer(char *line, char **envp);
-void	ft_print(char *line);
-void	ft_find_pipe(char *line);
 
 //utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -47,5 +45,14 @@ void	end_of_word(const char **s, char c, t_word *word);
 void	ft_free(char **p, int sz);
 void	init_word(t_word *word);
 int		is_quote(const char *s);
+
+//ft_qoute.c
+int		ft_double_qoute(char *line, int i, char **envp);
+int		ft_single_qoute(char *line, int i);
+void	ft_qoute_check(char *line, char **envp);
+
+//ft_export.c
+void	ft_print_export(char *temp, char **envp);
+int		ft_export_check(char *line, int i, char **envp);
 
 #endif /* MS_TEST_H*/

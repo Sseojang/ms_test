@@ -5,12 +5,14 @@
 // 	exit(0);
 // }
 
-int main(char **envp)
+int main(int ac, char **av, char **envp)
 {
 	char *line;
 	char *temp;
 
 	line = NULL;
+	(void)ac;
+	(void)av;
 	//signum(handler);
 	while (1)
 	{
