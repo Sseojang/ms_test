@@ -13,6 +13,12 @@ typedef struct s_flag
 	int	pipe;
 }	t_flag;
 
+typedef struct s_tokken_list
+{
+	char			*content;
+	struct s_tokken_list	*next;
+}					t_tokken_list;
+
 typedef struct s_list
 {
 	void			*content;
@@ -34,16 +40,19 @@ typedef struct s_word
 int	ft_is_digit(char c);
 int	ft_is_alpha(char c);
 
+//lst_util.c
+t_tokken_list	*ft_lstnew(char *content);
+void	ft_lstadd_back(t_tokken_list **lst, t_tokken_list *new);
+
 //token
 void	ft_tokenizer(char *line, char **envp);
-char	**ft_none_pipe(char *line, char **envp);
-char	**ft_in_pipe(char *line, char **envp);
-void	ft_alpha_digit(char *line, int *i, char **ptr);
-void	ft_double_qoute_check(char *line, int *i, char **ptr, char **envp);
+void	ft_in_pipe(char *line, char **envp, t_tokken_list **tokken);
+char	*ft_alpha_digit(char *line, int *i);
+char	*ft_double_qoute_check(char *line, int *i, char **envp);
 char	*ft_export_ptr(char *line, int *i, char **envp);
 char	*ft_export_push(char *temp, char **envp);
-void	ft_single_qoute_check(char *line, int *i, char **ptr);
-void	ft_redirection_check(char *line, int *i, char **ptr);
+char	*ft_single_qoute_check(char *line, int *i);
+char	*ft_redirection_check(char *line, int *i);
 
 //utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);

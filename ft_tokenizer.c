@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 18:59:16 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/09 20:13:26 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,39 +17,46 @@
 	
 	// pipex_bonus + 리다이렉션
 
-void	ft_redirection_check(char *line, int *i, char **ptr)
+char	*ft_redirection_check(char *line, int *i)
 {
+	char	*ptr;
+
+	ptr = NULL;
 	if (line[*i] == '<' && line[*i + 1] == '<')
 	{
-		*ptr = ft_strdup("2");
-		*i++;
+		ptr = ft_strdup("2");
+		(*i)++;
 	}
 	else
-		*ptr = ft_strdup("1");
+		ptr = ft_strdup("1");
 	if (line[*i] == '>' && line[*i + 1] == '>')
 	{
-		*ptr = ft_strdup("4");
-		*i++;
+		ptr = ft_strdup("4");
+		(*i)++;
 	}
 	else
-		*ptr = ft_strdup("3");
+		ptr = ft_strdup("3");
+	return (ptr);
 }
 
-void	ft_single_qoute_check(char *line, int *i, char **ptr)
+char	*ft_single_qoute_check(char *line, int *i)
 {
-	*i++;
-	int	first_num;
+	(*i)++;
+	int		first_num;
+	char	*ptr;
 
+	ptr = NULL;
 	first_num = *i;
 	while (line[*i])
 	{
 		if (line[*i] == 39)
 		{
-			*ptr = ft_substr(line, first_num, *i);
+			ptr = ft_substr(line, first_num, *i);
 			break ;
 		}
-		*i++;
+		(*i)++;
 	}
+	return (ptr);
 }
 
 char	*ft_export_push(char *temp, char **envp)
@@ -97,24 +104,27 @@ char	*ft_export_ptr(char *line, int *i, char **envp)
 		{
 			temp = ft_substr(line, first_num, *i + 1 - first_num);
 			ret = ft_export_push(temp, envp);
-			return (ret);
+			break ;
 		}
-		*i++;
+		(*i)++;
 	}
+	return (ret);
 }
 
-void	ft_double_qoute_check(char *line, int *i, char **ptr, char **envp)
+char	*ft_double_qoute_check(char *line, int *i, char **envp)
 {
-	*i++;
+	(*i)++;
 	int		first_num;
 	char	*temp;
+	char	*ptr;
 
+	ptr = NULL;
 	first_num = *i;
 	while (line[*i])
 	{
 		if (line[*i] == 34)
 		{
-			*ptr = temp;
+			ptr = temp;
 			free(temp);
 			break ;
 		}
@@ -126,14 +136,17 @@ void	ft_double_qoute_check(char *line, int *i, char **ptr, char **envp)
 		{
 			temp = ft_strjoin(temp, ft_strdup(&line[*i]));
 		}
-		*i++;
+		(*i)++;
 	}
+	return (ptr);
 }
 
-void	ft_alpha_digit(char *line, int *i, char **ptr)
+char	*ft_alpha_digit(char *line, int *i)
 {
 	char	*temp;
+	char	*ptr;
 
+	ptr = NULL;
 	while (line[*i])
 	{
 		if (ft_is_alpha(line[*i]) || ft_is_digit(line[*i]))
@@ -145,13 +158,13 @@ void	ft_alpha_digit(char *line, int *i, char **ptr)
 		(*i)++;
 	}
 	--(*i);
-	*ptr = temp;
+	ptr = temp;
 	free(temp);
+	return (ptr);
 }
 
-char	**ft_in_pipe(char *line, char **envp)
+void	ft_in_pipe(char *line, char **envp, t_tokken_list **tokken)
 {
-	char	**ptr;
 	int		i;
 	int		j;
 
@@ -160,63 +173,35 @@ char	**ft_in_pipe(char *line, char **envp)
 	while (line[i])
 	{
 		if (line[i] == '<' || line[i] == '>')
-			ft_redirection_check(line, &i, &ptr[j++]);
+			ft_lstadd_back(tokken, ft_lstnew(ft_redirection_check(line, &i)));
 		else if (line[i] == 39) // single_qoute
-			ft_single_qoute_check(line, &i, &ptr[j++]);
+			ft_lstadd_back(tokken, ft_lstnew(ft_single_qoute_check(line, &i)));
 		else if (line[i] == 34) // bouble_qoute
-			ft_double_qoute_check(line, &i, &ptr[j++], envp);
+			ft_lstadd_back(tokken, ft_lstnew(ft_double_qoute_check(line, &i, envp)));
 		else if (line[i] == '$')
-			ptr[j++] = ft_export_ptr(line, &i, envp);
+			ft_lstadd_back(tokken, ft_lstnew(ft_export_ptr(line, &i, envp)));
 		else if (line[i] == '|')
-			ptr[j++] = ft_strdup("|");
+			ft_lstadd_back(tokken, ft_lstnew(ft_strdup("|")));
 		else if (ft_is_alpha(line[i]) || ft_is_digit(line[i]))
-			ft_alpha_digit(line, &i, &ptr[j++]);
+			ft_lstadd_back(tokken, ft_lstnew(ft_alpha_digit(line, &i)));
 		i++; // 스페이스 & 탭
 	}
-	ptr[j] = NULL;
-	return (ptr);
-}
-
-char	**ft_none_pipe(char *line, char **envp)
-{
-	char	**ptr;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 0;
-	while (line[i])
-	{
-		if (line[i] == '<' || line[i] == '>')
-			ft_redirection_check(line, &i, &ptr[j++]);
-		else if (line[i] == 39) // single_qoute
-			ft_single_qoute_check(line, &i, &ptr[j++]);
-		else if (line[i] == 34) // bouble_qoute
-			ft_double_qoute_check(line, &i, &ptr[j++], envp);
-		else if (line[i] == '$')
-			ptr[j++] = ft_export_ptr(line, &i, envp);
-		else if (ft_is_alpha(line[i]) || ft_is_digit(line[i]))
-			ft_alpha_digit(line, &i, &ptr[j++]);
-		i++; // 스페이스 & 탭
-	}
-	ptr[j] = NULL;
-	return (ptr);
 }
 
 void	ft_tokenizer(char *line, char **envp)
 {
 	t_flag	flag;
-	char	**ptr;
+	t_tokken_list	*tokken;
 
+	tokken = NULL;
 	ft_qoute_check(line, envp, &flag);
 	write(1, "\n", 1);
-	if (flag.pipe == 1)
-		ptr = ft_in_pipe(line, envp);
-	else
-		ptr = ft_none_pipe(line, envp);
+	ft_in_pipe(line, envp, &tokken);
+
 	int	i = 0;
-	while (ptr[i])
+	while (tokken)
 	{
-		printf("ptr[%d] = %s\n", i, ptr[i]);
+		printf("ptr[%d] = %s\n", i, tokken->content);
+		tokken = tokken->next;
 	}
 }
