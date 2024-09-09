@@ -8,6 +8,11 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 
+typedef struct s_flag
+{
+	int	pipe;
+}	t_flag;
+
 typedef struct s_list
 {
 	void			*content;
@@ -25,7 +30,20 @@ typedef struct s_word
 	const char	*end;
 }			t_word;
 
+//libft.c
+int	ft_is_digit(char c);
+int	ft_is_alpha(char c);
+
+//token
 void	ft_tokenizer(char *line, char **envp);
+char	**ft_none_pipe(char *line, char **envp);
+char	**ft_in_pipe(char *line, char **envp);
+void	ft_alpha_digit(char *line, int *i, char **ptr);
+void	ft_double_qoute_check(char *line, int *i, char **ptr, char **envp);
+char	*ft_export_ptr(char *line, int *i, char **envp);
+char	*ft_export_push(char *temp, char **envp);
+void	ft_single_qoute_check(char *line, int *i, char **ptr);
+void	ft_redirection_check(char *line, int *i, char **ptr);
 
 //utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);
@@ -49,7 +67,7 @@ int		is_quote(const char *s);
 //ft_qoute.c
 int		ft_double_qoute(char *line, int i, char **envp);
 int		ft_single_qoute(char *line, int i);
-void	ft_qoute_check(char *line, char **envp);
+void	ft_qoute_check(char *line, char **envp, t_flag *flag);
 
 //ft_export.c
 void	ft_print_export(char *temp, char **envp);

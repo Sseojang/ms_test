@@ -1,37 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_libft.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/09 19:02:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 19:02:14 by seojang          ###   ########.fr       */
+/*   Created: 2024/09/09 18:47:45 by seojang           #+#    #+#             */
+/*   Updated: 2024/09/09 19:01:52 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ms_test.h"
 
-// void	handler()
-// {
-// 	exit(0);
-// }
-
-int main(int ac, char **av, char **envp)
+int	ft_is_alpha(char c)
 {
-	char *line;
-	char *temp;
+	if ((c >= 64 && c <= 90) || (c >= 97 && c <= 122))
+		return (1);
+	return(0);
+}
 
-	line = NULL;
-	(void)ac;
-	(void)av;
-	while (1)
-	{
-		line = readline("minishell>");
-		if (line)
-			ft_tokenizer(line, envp);
-		add_history(line);
-		free(line);
-	}
-	return (0);
+int	ft_is_digit(char c)
+{
+	if ((c >= 48 && c <= 57))
+		return (1);
+	return(0);
 }
