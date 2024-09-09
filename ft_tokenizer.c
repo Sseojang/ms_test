@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 20:38:28 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/09 21:38:57 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ char	*ft_single_qoute_check(char *line, int *i)
 	{
 		if (line[*i] == 39)
 		{
-			ptr = ft_substr(line, first_num, *i);
+			ptr = ft_substr(line, first_num, (*i) - first_num);
 			break ;
 		}
 		(*i)++;
@@ -64,6 +64,7 @@ char	*ft_export_push(char *temp, char **envp)
 	int	i;
 	int	j;
 	char	*ret;
+	int		first_num;
 
 	i = 0;
 	while (envp[i])
@@ -81,8 +82,10 @@ char	*ft_export_push(char *temp, char **envp)
 			if (envp[i][j] == '=' && temp[j] == '\0') //변수 있음
 			{
 				j++;
+				first_num = j;
 				while (envp[i][j] != '\0')
-					ret = ft_strjoin(ret, ft_strdup(&envp[i][j++]));
+					j++;
+				ret = ft_substr(envp[i], first_num, j);
 				return (ret);
 			}
 		}
@@ -115,68 +118,73 @@ char	*ft_double_qoute_check(char *line, int *i, char **envp)
 {
 	(*i)++;
 	int		first_num;
-	char	*temp;
 	char	*ptr;
+	char	*temp;
 
 	ptr = NULL;
 	first_num = *i;
+	temp = NULL;
 	while (line[*i])
 	{
 		if (line[*i] == 34)
-		{
-			ptr = temp;
-			free(temp);
 			break ;
-		}
 		else if (line[*i] == '$')
 		{
-			temp = ft_strjoin(temp, ft_export_ptr(line, i, envp));
+			if (first_num != *i)
+				ptr = ft_substr(line, first_num, (*i) - first_num);
+			temp = ft_strdup(ft_export_ptr(line, i, envp));
+			ptr = ft_strjoin(ptr, temp);
+			free(temp);
+			first_num = *i;
 		}
 		else
 		{
-			temp = ft_strjoin(temp, ft_strdup(&line[*i]));
+			if (first_num != *i)
+			{
+				temp = ft_substr(line, first_num, (*i) - first_num);
+				ptr = ft_strjoin(ptr, temp);
+				free(temp);
+				first_num = *i;
+			}
+			(*i)++;
 		}
-		(*i)++;
 	}
 	return (ptr);
 }
 
 char	*ft_alpha_digit(char *line, int *i)
 {
-	char	*temp;
 	char	*ptr;
+	int		first_num;
 
 	ptr = NULL;
+	first_num = *i;
 	while (line[*i])
 	{
 		if (ft_is_alpha(line[*i]) || ft_is_digit(line[*i]))
 		{
-			temp = ft_strjoin(temp, ft_strdup(&line[*i]));
+			(*i)++;
 		}
 		else
 			break ;
-		(*i)++;
 	}
+	ptr = ft_substr(line, first_num, *i);
 	--(*i);
-	ptr = temp;
-	free(temp);
 	return (ptr);
 }
 
 void	ft_in_pipe(char *line, char **envp, t_tokken_list **tokken)
 {
 	int		i;
-	int		j;
 
 	i = 0;
-	j = 0;
 	while (line[i])
 	{
 		if (line[i] == '<' || line[i] == '>')
 			ft_lstadd_back(tokken, ft_lstnew(ft_redirection_check(line, &i)));
 		else if (line[i] == 39) // single_qoute
 			ft_lstadd_back(tokken, ft_lstnew(ft_single_qoute_check(line, &i)));
-		else if (line[i] == 34) // bouble_qoute
+		else if (line[i] == 34) // double_qoute
 			ft_lstadd_back(tokken, ft_lstnew(ft_double_qoute_check(line, &i, envp)));
 		else if (line[i] == '$')
 			ft_lstadd_back(tokken, ft_lstnew(ft_export_ptr(line, &i, envp)));
@@ -203,6 +211,7 @@ void	ft_tokenizer(char *line, char **envp)
 	{
 		printf("ptr[%d] = %s\n", i, tokken->content);
 		tokken = tokken->next;
+		i++;
 	}
-	ft_lstclear(tokken);
+	ft_lstclear(&tokken);
 }
