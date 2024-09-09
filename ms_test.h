@@ -43,6 +43,7 @@ int	ft_is_alpha(char c);
 //lst_util.c
 t_tokken_list	*ft_lstnew(char *content);
 void	ft_lstadd_back(t_tokken_list **lst, t_tokken_list *new);
+void	ft_lstclear(t_list **lst);
 
 //token
 void	ft_tokenizer(char *line, char **envp);

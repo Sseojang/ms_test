@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 19:02:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 19:02:14 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/09 20:35:17 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 int main(int ac, char **av, char **envp)
 {
 	char *line;
-	char *temp;
 
 	line = NULL;
 	(void)ac;
