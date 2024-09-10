@@ -54,6 +54,7 @@ char	*ft_export_ptr(char *line, int *i, char **envp);
 char	*ft_export_push(char *temp, char **envp);
 char	*ft_single_qoute_check(char *line, int *i);
 char	*ft_redirection_check(char *line, int *i);
+char	*ft_option(char	*line, int *i);
 
 //utils
 char	*ft_substr(char const *s, unsigned int start, size_t len);

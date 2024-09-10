@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/10 16:47:07 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/10 20:05:12 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,14 @@ char	*ft_redirection_check(char *line, int *i)
 		ptr = ft_strdup("2");
 		(*i)++;
 	}
-	else
+	else if (line[*i] == '<')
 		ptr = ft_strdup("1");
-	if (line[*i] == '>' && line[*i + 1] == '>')
+	else if (line[*i] == '>' && line[*i + 1] == '>')
 	{
 		ptr = ft_strdup("4");
 		(*i)++;
 	}
-	else
+	else if (line[*i] == '>')
 		ptr = ft_strdup("3");
 	return (ptr);
 }
@@ -185,8 +185,30 @@ char	*ft_alpha_digit(char *line, int *i)
 		else
 			break ;
 	}
-	ptr = ft_substr(line, first_num, *i);
+	ptr = ft_substr(line, first_num, (*i) - first_num);
 	--(*i);
+	return (ptr);
+}
+
+char	*ft_option(char	*line, int *i)
+{
+	char	*ptr;
+	int		first_num;
+
+	++(*i);
+	ptr = NULL;
+	first_num = (*i);
+	while (line[*i])
+	{
+		if (line[*i + 1] == ' ' || line[*i + 1] == '\t' || line[*i + 1] == 39 || line[*i + 1] == 34 || line[*i + 1] == '>' || line[*i + 1] == '<' || line[*i + 1] == '|' || line[*i + 1] == '-' || line[*i + 1] == '\0')
+		{
+			break ;
+		}
+		else
+			(*i)++;
+	}
+	(*i)++;
+	ptr = ft_strjoin(ft_strdup("-"),ft_substr(line, first_num, (*i) - first_num));
 	return (ptr);
 }
 
@@ -209,7 +231,14 @@ void	ft_in_pipe(char *line, char **envp, t_tokken_list **tokken)
 			ft_lstadd_back(tokken, ft_lstnew(ft_strdup("|")));
 		else if (ft_is_alpha(line[i]) || ft_is_digit(line[i]))
 			ft_lstadd_back(tokken, ft_lstnew(ft_alpha_digit(line, &i)));
-		i++; // 스페이스 & 탭
+		else if (line[i] == '-')
+			ft_lstadd_back(tokken, ft_lstnew(ft_option(line, &i)));
+		else if (line[i] == ' ' || line[i] == '\t')
+		{
+			i++;
+			continue ;
+		}
+		i++;
 	}
 }
 
