@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 21:38:57 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/10 16:47:07 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,27 +127,44 @@ char	*ft_double_qoute_check(char *line, int *i, char **envp)
 	while (line[*i])
 	{
 		if (line[*i] == 34)
-			break ;
-		else if (line[*i] == '$')
 		{
-			if (first_num != *i)
+			if (!ptr && first_num != *i)
+			{
 				ptr = ft_substr(line, first_num, (*i) - first_num);
-			temp = ft_strdup(ft_export_ptr(line, i, envp));
+				break ;
+			}
+			temp = ft_substr(line, first_num, (*i) - first_num);
 			ptr = ft_strjoin(ptr, temp);
 			free(temp);
-			first_num = *i;
+			break ;
 		}
-		else
+		else if (line[*i] == '$')
 		{
-			if (first_num != *i)
+			if (first_num < *i)
 			{
-				temp = ft_substr(line, first_num, (*i) - first_num);
+				if (!ptr)
+					ptr = ft_substr(line, first_num, (*i) - first_num);
+				else
+				{
+					temp = ft_substr(line, first_num, (*i) - first_num);
+					ptr = ft_strjoin(ptr, temp);
+					temp = NULL;
+				}
+			}
+			if (!ptr)
+			{
+				ptr = ft_strdup(ft_export_ptr(line, i, envp));
+				first_num = (*i) + 1;
+			}
+			else
+			{
+				temp = ft_strdup(ft_export_ptr(line, i, envp));
 				ptr = ft_strjoin(ptr, temp);
 				free(temp);
-				first_num = *i;
+				first_num = (*i) + 1;
 			}
-			(*i)++;
 		}
+		(*i)++;
 	}
 	return (ptr);
 }

@@ -6,7 +6,7 @@
 #    By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/15 09:48:53 by seojang           #+#    #+#              #
-#    Updated: 2024/09/09 20:51:51 by seojang          ###   ########.fr        #
+#    Updated: 2024/09/10 16:48:04 by seojang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ HEADER = ms_test.h
 
 OBJ_S = $(SRC_S:.c=.o) 
 
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra -g -fsanitize=address
 
 NAME = minishell
 
