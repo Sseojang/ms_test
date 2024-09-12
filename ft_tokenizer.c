@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/10 20:05:12 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/12 17:49:52 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,5 +259,6 @@ void	ft_tokenizer(char *line, char **envp)
 		tokken = tokken->next;
 		i++;
 	}
-	ft_lstclear(&tokken);
+	ft_paser_manager(&tokken);
+	//ft_lstclear(&tokken);
 }
