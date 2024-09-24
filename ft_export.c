@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 16:41:39 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 18:01:33 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/24 20:00:35 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,20 @@ int	ft_export_check(char *line, int i, char **envp)
 	int		first_num;
 
 	first_num = ++i;
+	temp = NULL;
+	if (line[i] == '\0')
+	{
+		write(1, "$", 1);
+		return (1);
+	}
+	if (line[i] == '?')
+	{
+		write(1, "0", 1);
+		return (2);
+	}
 	while (line[i])
 	{
-		if (line[i + 1] == ' ' || line[i + 1] == '\t' || line[i + 1] == '"' || line[i + 1] == '\0')
+		if (line[i + 1] == ' ' || line[i + 1] == '\t' || line[i + 1] == '"' || line[i + 1] == '\0' || line[i + 1] == '$')
 		{
 			temp = ft_substr(line, first_num, i + 1 - first_num);
 			ft_print_export(temp, envp);

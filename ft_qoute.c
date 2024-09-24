@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:10 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/10 16:51:40 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/24 19:34:49 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	ft_qoute_check(char *line, char **envp, t_flag *flag)
 		}
 		else if (line[i] == '$')
 		{
-			i = ft_export_check(line, i, envp);
+			i += ft_export_check(line, i, envp);
 		}
 		else if (line[i] == '|')
 		{

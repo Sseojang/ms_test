@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/12 17:49:52 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/24 19:59:56 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,19 @@ char	*ft_export_ptr(char *line, int *i, char **envp)
 	int		first_num;
 
 	first_num = ++(*i);
+	if (line[*i] == '\0')
+	{
+		ret = ft_strdup("$");
+		return (ret);
+	}
+	if (line[*i] == '?')
+	{
+		ret = ft_strdup("0");
+		return (ret);
+	}
 	while (line[*i])
 	{
-		if (line[*i + 1] == ' ' || line[*i + 1] == '\t' || line[*i + 1] == '"' || line[*i + 1] == '\0')
+		if (line[*i + 1] == ' ' || line[*i + 1] == '\t' || line[*i + 1] == '"' || line[*i + 1] == '\0' || line[*i + 1] == '$')
 		{
 			temp = ft_substr(line, first_num, *i + 1 - first_num);
 			ret = ft_export_push(temp, envp);
@@ -259,6 +269,6 @@ void	ft_tokenizer(char *line, char **envp)
 		tokken = tokken->next;
 		i++;
 	}
-	ft_paser_manager(&tokken);
+	//ft_paser_manager(&tokken);
 	//ft_lstclear(&tokken);
 }
