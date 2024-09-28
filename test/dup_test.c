@@ -1,40 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   dup_test.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/09 19:02:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/25 22:01:33 by seojang          ###   ########.fr       */
+/*   Created: 2024/09/28 22:13:37 by seojang           #+#    #+#             */
+/*   Updated: 2024/09/29 02:13:59 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ms_test.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <fcntl.h>
+#define BUFFER_SIZE 42
 
-// void	handler()
-// {
-// 	exit(0);
-// }
-// echo $SHELL$
-// 01234567891011
-// first_num = 6 - >S
-// 11 - 6 = 5
-// 10 - 6 + 2 = 
-int main(int ac, char **av, char **envp)
+int	main()
 {
-	char *line;
+	char	*buf = "HELLO WORLD!\n";
+	int		*file_fd = open("./test", O_WRONLY);
 
-	line = NULL;
-	(void)ac;
-	(void)av;
-	while (1)
-	{
-		line = readline("minishell>");
-		if (line)
-			ft_tokenizer(line, envp);
-		add_history(line);
-		free(line);
-	}
-	return (0);
+	int		new_stdout = dup(STDOUT_FILENO);
+	dup2(file_fd, STDOUT_FILENO);
+
+	write(new_stdout, buf, BUFFER_SIZE);
 }
