@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:24:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/28 20:40:01 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/30 19:50:15 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ char	**ft_heredoc(char **av)
 		}
 		return (lines);
 	}
-	else // command execv 사용
+	else // command execve 사용
 }
 
 int	main(int ac, char **av)

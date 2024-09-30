@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/25 23:30:20 by seojang          ###   ########.fr       */
+/*   Updated: 2024/09/30 19:49:37 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,20 +22,25 @@ char	*ft_redirection_check(char *line, int *i)
 	char	*ptr;
 
 	ptr = NULL;
-	if (line[*i] == '<' && line[*i + 1] == '<')
+	if (line[*i] == '<' && line[*i + 1] == '<' && line[*i + 2] != '<' && line[*i + 2] != '>')
 	{
 		ptr = ft_strdup("2");
 		(*i)++;
 	}
-	else if (line[*i] == '<')
+	else if (line[*i] == '<' && line[*i + 1] != '<' && line[*i + 1] != '>')
 		ptr = ft_strdup("1");
-	else if (line[*i] == '>' && line[*i + 1] == '>')
+	else if (line[*i] == '>' && line[*i + 1] == '>' && line[*i + 2] != '<' && line[*i + 2] != '>')
 	{
 		ptr = ft_strdup("4");
 		(*i)++;
 	}
-	else if (line[*i] == '>')
+	else if (line[*i] == '>' && line[*i + 1] != '<' && line[*i + 1] != '>')
 		ptr = ft_strdup("3");
+	else
+	{
+		printf("ERROR");
+		exit(0);
+	}
 	return (ptr);
 }
 
