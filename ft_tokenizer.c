@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/30 19:49:37 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/02 18:59:21 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ char	*ft_alpha_digit(char *line, int *i)
 	first_num = *i;
 	while (line[*i])
 	{
-		if (ft_is_alpha(line[*i]) || ft_is_digit(line[*i]))
+		if (ft_is_alpha(line[*i]) || ft_is_digit(line[*i]) || line[*i] == '-')
 		{
 			(*i)++;
 		}
@@ -224,6 +224,15 @@ char	*ft_option(char	*line, int *i)
 	}
 	(*i)++;
 	ptr = ft_strjoin(ft_strdup("-"),ft_substr(line, first_num, (*i) - first_num));
+	return (ptr);
+}
+
+char	*ft_space(char *line, int *i)
+{
+	char	*ptr;
+
+	ptr = ft_strdup(" ");
+	(*i)++;
 	return (ptr);
 }
 
