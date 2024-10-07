@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 19:02:06 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/09 20:53:43 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/07 18:44:09 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,4 +94,18 @@ char	*ft_strdup(const char *s)
 		p[i++] = *s++;
 	p[i] = '\0';
 	return (p);
+}
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < n)
+	{
+		if (s1[i] != s2[i] || s1[i] == '\0' || s2[i] == '\0')
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return (0);
 }

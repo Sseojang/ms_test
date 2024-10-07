@@ -7,6 +7,8 @@
 # include <unistd.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <fcntl.h>
+# include <sys/wait.h>
 
 typedef struct s_flag
 {
@@ -24,6 +26,15 @@ typedef struct s_list
 	void			*content;
 	struct s_list	*next;
 }					t_list;
+
+typedef struct s_val
+{
+	int	prev_pipe;
+	int	fd_in;
+	int	fd_out;
+	int	heredoc_fd;
+	int	tokken_len;
+}			t_val;
 
 typedef struct s_word
 {
@@ -62,6 +73,7 @@ size_t	ft_strlen(char const *str);
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strdup(const char *s);
+int	ft_strncmp(const char *s1, const char *s2, size_t n);
 
 // ft_split.c
 char	**split(const char *s, char c, int size, char **p);
@@ -83,5 +95,16 @@ void	ft_qoute_check(char *line, char **envp, t_flag *flag);
 //ft_export.c
 void	ft_print_export(char *temp, char **envp);
 int		ft_export_check(char *line, int i, char **envp);
+
+//ft_paser
+int	ft_lst_len(t_tokken_list *tokken);
+char	*store_path(char **envp);
+char	*find_path(t_tokken_list *tokken, const char *env);
+void	ft_val_set(t_tokken_list *tokken, t_val *val, int *i);
+void	error(char *s, int num);
+void	execute_cmd(t_tokken_list *tokken, char **envp);
+void	ft_redir(t_tokken_list *tokken, t_val *val);
+void	ft_paser_manager(t_tokken_list *tokken, char **envp);
+void	free_path(char **paths);
 
 #endif /* MS_TEST_H*/

@@ -6,36 +6,48 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/28 22:13:37 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/29 20:49:52 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/07 16:12:18 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <string.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 #include <fcntl.h>
-#define BUFFER_SIZE 42
 
-void	change_standard_input(void)
-{
-	int	fd = open("test_txt.txt", O_RDONLY);
-	dup2(fd, STDIN_FILENO);
-	close(fd);
-}
+int main(void){
+        int fd1, ret;
+        char message[32]={"STDERR from fd1\n"};
 
-int	main(int ac, char **av, char **envp)
-{
-	char	*path;
-	char	**argument;
+        //그림 1번
+        fd1=open("made_by_fd1",O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+        if(fd1<0){
+                printf("file open error\n");
+                exit(0);
+        }
+        //표준 입출력으로 print됨
+        printf("file open\n");
 
-	argument = (char **)malloc(sizeof(char *) * 1);
-	argument[0] = strdup("cat");
-	path = strdup("/usr/bin/cat");
-	//change_standard_input();
-	execve(path, argument, envp);
-	perror("ERROR");
-	exit(EXIT_FAILURE);
+        //fd1의 파일 디스크립터가 명시한 STDOUT_FILENO의 파일 디스크립터로
+        //복제됨,
+        //그림 2번
+        ret=dup2(fd1,STDOUT_FILENO);
+
+        //fd1으로 출력됨
+        printf("fd1 :%d, ret:%d\n",fd1,ret);
+
+        //STDERR_FILENO 디스크립터가 명시된 fd1으로 복제됨
+        //그림 3번
+        ret=dup2(STDERR_FILENO,fd1);
+
+        //fd1은 에러로 출력됨
+        write(fd1,message,strlen(message));
+
+        //stdout이 file로 써짐
+        printf("printf를 썼지만 파일에 기록됨 \n");
+
+        close(fd1);
+
 }

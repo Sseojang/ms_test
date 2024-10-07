@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/02 18:59:21 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/07 18:52:45 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,18 @@ char	*ft_redirection_check(char *line, int *i)
 	ptr = NULL;
 	if (line[*i] == '<' && line[*i + 1] == '<' && line[*i + 2] != '<' && line[*i + 2] != '>')
 	{
-		ptr = ft_strdup("2");
+		ptr = ft_strdup("<<");
 		(*i)++;
 	}
 	else if (line[*i] == '<' && line[*i + 1] != '<' && line[*i + 1] != '>')
-		ptr = ft_strdup("1");
+		ptr = ft_strdup("<");
 	else if (line[*i] == '>' && line[*i + 1] == '>' && line[*i + 2] != '<' && line[*i + 2] != '>')
 	{
-		ptr = ft_strdup("4");
+		ptr = ft_strdup(">>");
 		(*i)++;
 	}
 	else if (line[*i] == '>' && line[*i + 1] != '<' && line[*i + 1] != '>')
-		ptr = ft_strdup("3");
+		ptr = ft_strdup(">");
 	else
 	{
 		printf("ERROR");
@@ -222,8 +222,7 @@ char	*ft_option(char	*line, int *i)
 		else
 			(*i)++;
 	}
-	(*i)++;
-	ptr = ft_strjoin(ft_strdup("-"),ft_substr(line, first_num, (*i) - first_num));
+	ptr = ft_strjoin(ft_strdup("-"),ft_substr(line, first_num, ((*i) + 1) - first_num));
 	return (ptr);
 }
 
@@ -249,8 +248,8 @@ void	ft_in_pipe(char *line, char **envp, t_tokken_list **tokken)
 			ft_lstadd_back(tokken, ft_lstnew(ft_single_qoute_check(line, &i)));
 		else if (line[i] == 34) // double_qoute
 			ft_lstadd_back(tokken, ft_lstnew(ft_double_qoute_check(line, &i, envp)));
-		else if (line[i] == '$')
-			ft_lstadd_back(tokken, ft_lstnew(ft_export_ptr(line, &i, envp)));
+		// else if (line[i] == '$')
+		// 	ft_lstadd_back(tokken, ft_lstnew(ft_export_ptr(line, &i, envp)));
 		else if (line[i] == '|')
 			ft_lstadd_back(tokken, ft_lstnew(ft_strdup("|")));
 		else if (ft_is_alpha(line[i]) || ft_is_digit(line[i]))
@@ -276,13 +275,12 @@ void	ft_tokenizer(char *line, char **envp)
 	write(1, "\n", 1);
 	ft_in_pipe(line, envp, &tokken);
 
-	int	i = 0;
-	while (tokken)
-	{
-		printf("ptr[%d] = %s\n", i, tokken->content);
-		tokken = tokken->next;
-		i++;
-	}
-	//ft_paser_manager(&tokken);
-	//ft_lstclear(&tokken);
+	//int	i = 0;
+	// while (tokken)
+	// {
+	// 	printf("ptr[%d] = %s\n", i, tokken->content);
+	// 	tokken = tokken->next;
+	// 	i++;
+	// }
+	ft_paser_manager(tokken, envp);
 }

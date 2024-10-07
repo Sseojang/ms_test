@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 22:50:15 by seojang           #+#    #+#             */
-/*   Updated: 2024/09/30 19:50:15 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/07 16:12:21 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ char	*heredoc(char *eof)
 		free(temp);
 	}
 	return (line);
+}
+
+int	find_heredoc()
+{
+	
 }
 
 int	main()

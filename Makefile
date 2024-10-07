@@ -6,7 +6,7 @@
 #    By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/15 09:48:53 by seojang           #+#    #+#              #
-#    Updated: 2024/09/10 16:48:04 by seojang          ###   ########.fr        #
+#    Updated: 2024/10/07 19:23:44 by seojang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRC = main.c \
 	ft_split_utils.c \
 	ft_libft.c \
 	ft_lst_util.c \
+	ft_paser.c \
 	ft_utils.c
 
 HEADER = ms_test.h
