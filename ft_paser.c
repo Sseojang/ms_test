@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/07 19:58:50 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/11 00:09:44 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,40 +54,12 @@ void	free_path(char **paths)
 	paths = NULL;
 }
 
-
-char	*find_path(t_tokken_list *tokken, const char *env)
-{
-	char	**paths;
-	char	*path;
-	int		i;
-
-	paths = ft_split(env, ':');
-	i = 0;
-	if (access(tokken->content, F_OK | X_OK) == 0)
-		return (tokken->content);
-	
-	while (paths[i])
-	{
-		path = ft_strjoin(paths[i], tokken->content);
-		if (access(path, F_OK | X_OK) == 0)
-		{
-			free_path(paths);
-			return (path);
-		}
-		i++;
-		free(path);
-	}
-	free_path(paths);
-	return (path);
-}
-
-void	ft_val_set(t_tokken_list *tokken, t_val *val, int *i)
+void	ft_val_set(t_tokken_list *tokken, t_val *val)
 {
 	val->fd_in = -1;
 	val->fd_out = -1;
 	val->prev_pipe = -1;
 	val->heredoc_fd = -1;
-	*i = 0;
 	val->tokken_len = ft_lst_len(tokken);
 }
 
@@ -106,120 +78,189 @@ void	error(char *s, int num)
 	exit(EXIT_FAILURE);
 }
 
-void	execute_cmd(t_tokken_list *tokken, char **envp)
+char *find_path(char *argv, const char *env)
 {
-	char *const	env[] = {store_path(envp), NULL};
-	char *argv[] = {find_path(tokken, env[0]), tokken->next->content, NULL};
+	char **paths;
+	char *command;
+	char *path;
+	int i;
 
-	execve(find_path(tokken, env[0]), argv, env);
-	error("execve failed", 1);
-}
-
-void	ft_redir(t_tokken_list *tokken, t_val *val)
-{
-	if (tokken->next == NULL)
-		error("syntax error: unexpected end of token", 1);
-	if (ft_strncmp(tokken->content, ">>", 2))
+	paths = ft_split(env, ':');
+	command = ft_strdup(argv);
+	i = 0;
+	
+	if (access(command, F_OK | X_OK) == 0)
 	{
-		char	*file = tokken->next->content;
-		val->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (val->fd_out < 0)
-			error("append error", 1);
+		path = ft_strdup(command);
 	}
-	else if (ft_strncmp(tokken->content, ">", 1))
+	else
 	{
-		char	*file = tokken->next->content;
-		val->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (val->fd_out < 0)
-			error("output error", 1);
-	}
-	else if (ft_strncmp(tokken->content, "<", 1))
-	{
-		char	*file = tokken->next->content;
-		val->fd_in = open(file, O_RDONLY);
-		if (val->fd_in < 0)
-			error("input error", 1);
-	}
-	else if (ft_strncmp(tokken->content, "<<", 2))
-	{
-		char	*eof = tokken->next->content;
-		char	*buf;
-		int		pipefd[2];
-		pipe(pipefd);
-		val->heredoc_fd = pipefd[0];
-		while (1)
+		while (paths[i])
 		{
-			buf = readline(">");
-			if (ft_strncmp(buf, eof, ft_strlen(eof)) == 0)
-			{
-				free(buf);
-				break ;
-			}
-			buf = ft_strjoin(buf, " ");
-			write(pipefd[1], buf, ft_strlen(buf));
-			free(buf);
+			path = ft_strjoin(paths[i], "/");
+			path = ft_strjoin(path, command);
+			if (access(path, F_OK | X_OK) == 0)
+				break;
+			free(path);
+			path = NULL;
+			i++;
 		}
-		close(pipefd[1]);
 	}
+	//free_path(paths);
+	//free(command);
+	return path;
 }
 
-void	ft_paser_manager(t_tokken_list *tokken, char **envp)
+void execute_cmd(t_tokken_list **tokken, char **envp)
 {
-	int	pipefd[2];
-	t_val	val;
-	pid_t	pid;
-	int	i;
+	char *const env[] = {store_path(envp), NULL};
+	char **argv = NULL;
+	char *path = NULL;
+	int arg_count = 0;
 
-	ft_val_set(tokken, &val, &i);
+	if (!(*tokken) || !(*tokken)->content || !envp)
+		error("Invalid command or environment", 1);
+
+	t_tokken_list *temp = *tokken;
+	while (temp && temp->content && ft_strncmp(temp->content, "|", 1) != 0 \
+	&& ft_strncmp(temp->content, ">", 1) != 0 \
+	&& ft_strncmp(temp->content, ">>", 2) != 0 \
+	&& ft_strncmp(temp->content, "<", 1) != 0)
+	{
+		arg_count++;
+		temp = temp->next;
+	}
+
+	argv = malloc(sizeof(char *) * (arg_count + 1));
+	if (!argv)
+		error("Memory allocation failed", 2);
+	for (int i = 0; i < arg_count; i++)
+	{
+		argv[i] = ft_strdup((*tokken)->content);
+		*tokken = (*tokken)->next;
+	}
+	argv[arg_count] = NULL;
+
+	path = find_path(argv[0], env[0]);
+	if (!path)
+		error(argv[0], 3);
+	execve(path, argv, envp);
+	error("execve failed", 2);
+}
+
+void	ft_redir_out(t_tokken_list **tokken, t_val *val)
+{
+	char	*file = (*tokken)->next->content;
+
+	if (!(*tokken)->next || !(*tokken)->next->content)
+		error("redir next cmd error", 1);
+	val->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (val->fd_out < 0)
+		error("output error", 1);
+	//(*tokken) = (*tokken)->next;
+}
+
+void	ft_redir_add(t_tokken_list **tokken, t_val *val)
+{
+	char	*file = (*tokken)->next->content;
+
+	if (!(*tokken)->next || !(*tokken)->next->content)
+		error("redir next cmd error", 1);
+	val->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (val->fd_out < 0)
+		error("output error", 1);
+	//(*tokken) = (*tokken)->next;
+}
+
+void	ft_redir_open(t_tokken_list **tokken, t_val *val)
+{
+	char	*file = (*tokken)->next->content;
+
+	if (!(*tokken)->next || !(*tokken)->next->content)
+		error("redir next cmd error", 1);
+	val->fd_in = open(file, O_RDONLY);
+	if (val->fd_in < 0)
+		error("output error", 1);
+	//(*tokken) = (*tokken)->next;
+}
+
+void ft_paser_manager(t_tokken_list *tokken, char **envp)
+{
+	pid_t pid;
+	t_val val;
+	int pipefd[2] = {-1, -1};
+	t_tokken_list	*lst;
+
+	ft_val_set(tokken, &val);
 	while (tokken)
 	{
-		ft_redir(tokken, &val);
+		if (tokken->next && tokken->next->content && ft_strncmp(tokken->next->content, "|", 1) == 0)
+		{
+			if (pipe(pipefd) == -1)
+				error("pipe error", 1);
+			val.fd_out = pipefd[1];
+			tokken = tokken->next;
+		}
+		else
+			val.fd_out = -1;
+		lst = tokken;
+		while (lst && lst->content && ft_strncmp(lst->content, "|", 1) != 0)
+		{
+			if (ft_strncmp(lst->content, ">", 1) == 0)
+			{
+				ft_redir_out(&lst, &val);
+			}
+			else if (ft_strncmp(lst->content, ">>", 2) == 0)
+			{
+				ft_redir_add(&lst, &val);
+			}
+			else if (ft_strncmp(lst->content, "<", 1) == 0)
+			{
+				ft_redir_open(&lst, &val);
+				tokken = tokken->next->next;
+			}
+			lst = lst->next;
+		}
 		pid = fork();
 		if (pid < 0)
-			error("fork error", 1);
+			error("Fork error", 1);
 		else if (pid == 0)
 		{
 			if (val.fd_in != -1)
 			{
-				dup2(val.fd_in, STDIN_FILENO);
+				if (dup2(val.fd_in, STDIN_FILENO) == -1)
+					error("dup2 failed", 1);
 				close(val.fd_in);
-			}
-			else if (val.prev_pipe != -1)
-			{
-				dup2(val.prev_pipe, STDIN_FILENO);
-				close(val.prev_pipe);
 			}
 			if (val.fd_out != -1)
 			{
-				dup2(val.fd_out, STDOUT_FILENO);
+				if (dup2(val.fd_out, STDOUT_FILENO) == -1)
+					error("dup2 failed", 2);
 				close(val.fd_out);
+				val.redir_flag = 1;
 			}
-			else if (tokken->next != NULL)
-			{
-				close(pipefd[0]);
-				dup2(pipefd[1], STDOUT_FILENO);
-				close(pipefd[1]);
-			}
-			if (val.heredoc_fd != -1)
-			{
-				dup2(val.heredoc_fd, STDIN_FILENO);
-				close(val.heredoc_fd);
-			}
-			execute_cmd(tokken, envp);
+			execute_cmd(&tokken, envp);
+			exit(1);
 		}
 		else
 		{
-			if (val.prev_pipe != -1)
-				close(val.prev_pipe);
-			if (tokken->next != NULL)
-				close(pipefd[1]);
-			val.prev_pipe = pipefd[0];
+			if (val.fd_in != -1)
+				close(val.fd_in);
+			if (val.fd_out != -1)
+				close(val.fd_out);
+			val.fd_in = pipefd[0];
+			pipefd[0] = -1;
+			pipefd[1] = -1;
 		}
-		tokken = tokken->next;
+		if (val.redir_flag == 1)
+		{
+			tokken = tokken->next->next;
+			val.redir_flag = 0;
+		}
+		else
+			tokken = tokken->next;
 	}
-	while(i < val.tokken_len)
-	{
-		wait(NULL);
-		i++;
-	}
+	if (val.fd_in != -1)
+		close(val.fd_in);
+	while (wait(NULL) > 0);
 }

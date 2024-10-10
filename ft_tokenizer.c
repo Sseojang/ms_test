@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/07 18:52:45 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/10 18:41:14 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,18 +269,20 @@ void	ft_tokenizer(char *line, char **envp)
 {
 	t_flag	flag;
 	t_tokken_list	*tokken;
+	t_tokken_list	*lst;
 
 	tokken = NULL;
 	ft_qoute_check(line, envp, &flag);
 	write(1, "\n", 1);
 	ft_in_pipe(line, envp, &tokken);
 
-	//int	i = 0;
-	// while (tokken)
-	// {
-	// 	printf("ptr[%d] = %s\n", i, tokken->content);
-	// 	tokken = tokken->next;
-	// 	i++;
-	// }
+	int	i = 0;
+	lst = tokken;
+	while (lst)
+	{
+		printf("ptr[%d] = %s\n", i, lst->content);
+		lst = lst->next;
+		i++;
+	}
 	ft_paser_manager(tokken, envp);
 }
