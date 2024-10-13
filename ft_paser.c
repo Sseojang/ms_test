@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/13 18:01:28 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/13 20:26:46 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	ft_val_set(t_tokken_list *tokken, t_val *val)
 {
 	val->fd_in = -1;
 	val->fd_out = -1;
-	//val->prev_pipe = -1;
+	val->prev_pipe = -1;
 	//val->heredoc_fd = -1;
 	//val->tokken_len = ft_lst_len(tokken);
 }
@@ -111,17 +111,16 @@ char *find_path(char *argv, const char *env)
 	return path;
 }
 
-void execute_cmd(t_tokken_list **tokken, char **envp)
+void execute_cmd(t_tokken_list *tokken, char **envp)
 {
 	char *const env[] = {store_path(envp), NULL};
 	char **argv = NULL;
 	char *path = NULL;
 	int arg_count = 0;
 
-	if (!(*tokken) || !(*tokken)->content || !envp)
+	if (!tokken || !tokken->content || !envp)
 		error("Invalid command or environment", 1);
-
-	t_tokken_list *temp = *tokken;
+	t_tokken_list *temp = tokken;
 	while (temp && temp->content && ft_strncmp(temp->content, "|", 1) != 0 \
 	&& ft_strncmp(temp->content, ">", 1) != 0 \
 	&& ft_strncmp(temp->content, ">>", 2) != 0 \
@@ -136,8 +135,8 @@ void execute_cmd(t_tokken_list **tokken, char **envp)
 		error("Memory allocation failed", 2);
 	for (int i = 0; i < arg_count; i++)
 	{
-		argv[i] = ft_strdup((*tokken)->content);
-		*tokken = (*tokken)->next;
+		argv[i] = ft_strdup(tokken->content);
+		tokken = tokken->next;
 	}
 	argv[arg_count] = NULL;
 
@@ -148,74 +147,102 @@ void execute_cmd(t_tokken_list **tokken, char **envp)
 	error("execve failed", 2);
 }
 
-void	ft_redir_out(t_tokken_list **tokken, t_val *val) // > 토큰 파이프x 공백x 리다이렉션x    > out
+void	ft_redir_out(t_tokken_list *tokken, t_val *val) // > 토큰 파이프x 공백x 리다이렉션x    > out
 {
 	char	*file;
 
-	if (!(*tokken)->next || !(*tokken)->next->content)
+	if (!tokken->next || !tokken->next->content)
 		error("redir next cmd error", 1);
-	file = (*tokken)->next->content;
+	file = ft_strdup(tokken->next->content);
 	if ( !file || !ft_strncmp(file, "|", 1))
 		error("redir error", 1);
 	val->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (val->fd_out < 0)
 		error("output error", 1);
-	(*tokken)->content = NULL;
-	(*tokken)->next->content = NULL;
+	tokken->content = ft_strdup("");
+	tokken->next->content = ft_strdup("");
 }
 
-void	ft_redir_add(t_tokken_list **tokken, t_val *val) //>> out
+void	ft_redir_add(t_tokken_list *tokken, t_val *val) //>> out
 {
-	char	*file = (*tokken)->next->content;
+	char	*file;
 
-	if (!(*tokken)->next || !(*tokken)->next->content)
+	if (!tokken->next || !tokken->next->content)
 		error("redir next cmd error", 1);
+	file = ft_strdup(tokken->next->content);
+	if ( !file || !ft_strncmp(file, "|", 1))
+		error("redir error", 1);
 	val->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (val->fd_out < 0)
 		error("output error", 1);
-	(*tokken)->content = NULL;
-	(*tokken)->next->content = NULL;
+	tokken->content = ft_strdup("");
+	tokken->next->content = ft_strdup("");
 }
 
-void	ft_redir_open(t_tokken_list **tokken, t_val *val)// < infile
+void	ft_redir_open(t_tokken_list *tokken, t_val *val)// < infile
 {
-	char	*file = (*tokken)->next->content;
+	char	*file;
 
-	if (!(*tokken)->next || !(*tokken)->next->content)
+	if (!tokken->next || !tokken->next->content)
 		error("redir next cmd error", 1);
+	file = ft_strdup(tokken->next->content);
+	if ( !file || !ft_strncmp(file, "|", 1))
+		error("redir error", 1);
 	val->fd_in = open(file, O_RDONLY);
 	if (val->fd_in < 0)
 		error("output error", 1);
-	(*tokken)->content = NULL;
-	(*tokken)->next->content = NULL;
+	tokken->content = ft_strdup("");
+	tokken->next->content = ft_strdup("");
 }
 
-void	ft_find_redir(t_tokken_list *lst, t_val *val)
+void	ft_find_redir(t_tokken_list *tokken, t_val *val)
 {
-	while (lst && ft_strncmp(lst->content, "|",1) != 0 && lst->content != NULL)
-	{
-		if (!ft_strncmp(lst->content, ">",1))
-			ft_redir_out(lst, &val);
-		if (!ft_strncmp(lst->content, ">>",2))
-			ft_redir_out(lst, &val);
-		if (!ft_strncmp(lst->content, "<",1))
-			ft_redir_out(lst, &val);
-		lst = lst->next;
-	}
-}
+	t_tokken_list	*lst;
 
-void	ft_find_pipe(t_tokken_list *lst, t_val *val, int **pipefd)
-{
+	lst = tokken;
 	while (lst)
 	{
-		if (ft_strncmp(lst->content, "|", 1) == 0)
-			val->fd_out = pipefd[1];
+		if (lst->content)
+		{
+			if (!ft_strncmp(lst->content, ">",1))
+				ft_redir_out(lst, val);
+			else if (!ft_strncmp(lst->content, ">>",2))
+				ft_redir_out(lst, val);
+			else if (!ft_strncmp(lst->content, "<",1))
+				ft_redir_out(lst, val);
+			break ;
+		}
 		lst = lst->next;
 	}
 }
+
+void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd)
+{
+	t_tokken_list	*lst;
+
+	lst = tokken;
+	while (lst)
+	{
+		if (lst->content && ft_strncmp(lst->content, "|", 1) == 0)
+		{
+			val->fd_out = pipefd[1];
+			break ;
+		}
+		lst = lst->next;
+	}
+}
+
+// void	ft_check_bulitin(t_tokken_list *lst, char **envp)
+// {
+// 	//
+// 	execute_cmd(val->cmd, envp);
+// 	exit(EXIT_FAILURE);
+// }
 
 void	ft_dup(t_val *val, char **envp)
 {
+	if (!val->cmd)
+		exit(EXIT_FAILURE);
 	if (val->fd_in != -1)
 	{
 		if (dup2(val->fd_in, STDIN_FILENO) == -1)
@@ -228,18 +255,19 @@ void	ft_dup(t_val *val, char **envp)
 			error("dup2 failed", 2);
 		close(val->fd_out);
 	}
+	//ft_check_bulitin(val->cmd, envp);
 	execute_cmd(val->cmd, envp);
 	exit(EXIT_FAILURE);
 }
 
-void	*ft_find_cmd(t_tokken_list *tokken, t_val *val)
+void	ft_find_cmd(t_tokken_list *tokken, t_val *val)
 {
 	t_tokken_list	*lst;
 
 	lst = tokken;
 	while (lst && ft_strncmp(lst->content, "|", 1) != 0)
 	{
-		if (lst->content != NULL)
+		if (lst->content != NULL || !ft_strlen(lst->content))
 		{
 			val->cmd = lst;
 			break ;
@@ -261,9 +289,7 @@ void ft_paser_manager(t_tokken_list *tokken, char **envp)
 	//ft_heredoc(tokken); val char *
 	while (tokken)
 	{
-		if (val.prev_pipe > 0)
-			dup2(pipefd[0], STDIN_FILENO);
-		ft_find_pipe(tokken, &val, &pipefd);
+		ft_find_pipe(tokken, &val, pipefd);
 		ft_find_redir(tokken, &val);         // cat > out | ls -l      cat NULL NULL | ls -l 
 		ft_find_cmd(tokken, &val);
 		pid = fork();
@@ -277,12 +303,14 @@ void ft_paser_manager(t_tokken_list *tokken, char **envp)
 				close(val.fd_in);
 			if (val.fd_out != -1)
 				close(val.fd_out);
-			
 			val.fd_in = pipefd[0];
 			pipefd[0] = -1;
 			pipefd[1] = -1;
 		}
-		tokken = tokken->next; //다음 파이프 혹은 공백까지 이동 시키기
+		while (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) != 0)
+			tokken = tokken->next;
+		if (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) == 0)
+			tokken = tokken->next;
 	}
 	if (val.fd_in != -1)
 		close(val.fd_in);
