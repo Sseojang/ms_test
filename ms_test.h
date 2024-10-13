@@ -35,6 +35,7 @@ typedef struct s_val
 	int	heredoc_fd;
 	int	tokken_len;
 	int	redir_flag;
+	t_list	*cmd;
 }			t_val;
 
 typedef struct s_word
