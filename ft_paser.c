@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/14 15:25:42 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/14 18:51:09 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,9 @@ void	ft_redir_out(t_tokken_list *lst, t_val *val, t_tokken_list **tokken) // > í
 {
 	char	*file;
 	t_tokken_list	*head;
+	int	i;
 
+	i = 0;
 	head = (*tokken);
 	if (!lst->next || !lst->next->content)
 		error("redir next cmd error", 1);
@@ -178,6 +180,9 @@ void	ft_redir_out(t_tokken_list *lst, t_val *val, t_tokken_list **tokken) // > í
 	{
 		(*tokken)->content = ft_strdup("");
 		(*tokken) = (*tokken)->next;
+		i++;
+		if (i == 2)
+			break ;
 	}
 	(*tokken) = head;
 }
@@ -186,9 +191,10 @@ void	ft_redir_add(t_tokken_list *lst, t_val *val, t_tokken_list **tokken) //>> o
 {
 	char	*file;
 	t_tokken_list	*head;
-
+	int	i;
+	
+	i = 0;
 	head = (*tokken);
-
 	if (!lst->next || !lst->next->content)
 		error("redir next cmd error", 1);
 	file = ft_strdup(lst->next->content);
@@ -197,10 +203,16 @@ void	ft_redir_add(t_tokken_list *lst, t_val *val, t_tokken_list **tokken) //>> o
 	val->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (val->fd_out < 0)
 		error("output error", 1);
-	while ((*tokken) && !ft_strncmp((*tokken)->content, file, ft_strlen(file)))
+	while ((*tokken) && ft_strncmp((*tokken)->content, ">>", 2))
 		(*tokken) = (*tokken)->next;
-	(*tokken)->content = ft_strdup("");
-	(*tokken)->next->content = ft_strdup("");
+	while ((*tokken) && ft_strncmp((*tokken)->content, "|", 1))
+	{
+		(*tokken)->content = ft_strdup("");
+		(*tokken) = (*tokken)->next;
+		i++;
+		if (i == 2)
+			break ;
+	}
 	(*tokken) = head;
 }
 
@@ -208,20 +220,28 @@ void	ft_redir_open(t_tokken_list *lst, t_val *val, t_tokken_list **tokken)// < i
 {
 	char	*file;
 	t_tokken_list	*head;
+	int	i;
 
+	i = 0;
 	head = (*tokken);
 	if (!lst->next || !lst->next->content)
 		error("redir next cmd error", 1);
 	file = ft_strdup(lst->next->content);
-	if ( !file || !ft_strncmp(file, "|", 1))
+	if (!file || !ft_strncmp(file, "|", 1))
 		error("redir error", 1);
-	val->fd_out = open(file, O_RDONLY);
-	if (val->fd_out < 0)
+	val->fd_in = open(file, O_RDONLY);
+	if (val->fd_in < 0)
 		error("output error", 1);
-	while ((*tokken) && !ft_strncmp((*tokken)->content, file, ft_strlen(file)))
+	while ((*tokken) && ft_strncmp((*tokken)->content, "<", 1))
 		(*tokken) = (*tokken)->next;
-	(*tokken)->content = ft_strdup("");
-	(*tokken)->next->content = ft_strdup("");
+	while ((*tokken) && ft_strncmp((*tokken)->content, "|", 1))
+	{
+		(*tokken)->content = ft_strdup("");
+		(*tokken) = (*tokken)->next;
+		i++;
+		if (i == 2)
+			break ;
+	}
 	(*tokken) = head;
 }
 
@@ -234,22 +254,19 @@ void	ft_find_redir(t_tokken_list **tokken, t_val *val)
 	{
 		if (lst->content)
 		{
-			if (!ft_strncmp(lst->content, ">",1))
+			if (!ft_strncmp(lst->content, ">", 1) && ft_strlen(lst->content) == 1)
 			{
 				ft_redir_out(lst, val, tokken);
-				break ;
 			}
-			else if (!ft_strncmp(lst->content, ">>",2))
+			else if (!ft_strncmp(lst->content, ">>", 2) && ft_strlen(lst->content) == 2)
 			{
-				ft_redir_out(lst, val, tokken);
-				break ;
+				ft_redir_add(lst, val, tokken);
 			}
-			else if (!ft_strncmp(lst->content, "<",1))
+			else if (!ft_strncmp(lst->content, "<", 1) && ft_strlen(lst->content) == 1)
 			{
-				ft_redir_out(lst, val, tokken);
-				break ;
+				ft_redir_open(lst, val, tokken);
 			}
-			else if (!ft_strncmp(lst->content, "|",1))
+			else if (!ft_strncmp(lst->content, "|", 1))
 				break ;
 		}
 		lst = lst->next;
@@ -306,7 +323,7 @@ void	ft_find_cmd(t_tokken_list *tokken, t_val *val)
 {
 	while (tokken && ft_strncmp(tokken->content, "|", 1) != 0)
 	{
-		if (tokken->content != NULL || !ft_strlen(tokken->content))
+		if (tokken->content != NULL && ft_strlen(tokken->content) != 0)
 		{
 			val->cmd = tokken;
 			break ;
