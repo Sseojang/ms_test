@@ -110,13 +110,13 @@ void	ft_paser_manager(t_tokken_list *tokken, char **envp);
 void	free_path(char **paths);
 
 //redir
-void	ft_redir_open(t_tokken_list *tokken, t_val *val);
-void	ft_redir_out(t_tokken_list *tokken, t_val *val);
-void	ft_redir_add(t_tokken_list *tokken, t_val *val);
+void	ft_redir_open(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
+void	ft_redir_out(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
+void	ft_redir_add(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
 
 void	ft_find_cmd(t_tokken_list *tokken, t_val *val);
 void	ft_dup(t_val *val, char **envp);
 void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd);
-void	ft_find_redir(t_tokken_list *tokken, t_val *val);
+void	ft_find_redir(t_tokken_list **tokken, t_val *val);
 
 #endif /* MS_TEST_H*/
