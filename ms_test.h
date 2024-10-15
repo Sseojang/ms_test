@@ -29,12 +29,14 @@ typedef struct s_list
 
 typedef struct s_val
 {
+	int	pipe_flag;
 	int	prev_pipe;
 	int	fd_in;
 	int	fd_out;
 	int	heredoc_fd;
 	int	tokken_len;
 	int	redir_flag;
+	int tmp_out;
 	t_tokken_list	*cmd;
 }			t_val;
 
@@ -115,7 +117,7 @@ void	ft_redir_out(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
 void	ft_redir_add(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
 
 void	ft_find_cmd(t_tokken_list *tokken, t_val *val);
-void	ft_dup(t_val *val, char **envp);
+void	ft_dup(t_val *val, char **envp, int *pipe);
 void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd);
 void	ft_find_redir(t_tokken_list **tokken, t_val *val);
 

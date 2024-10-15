@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/13 18:48:52 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/15 02:49:01 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,8 @@ char	*ft_double_qoute_check(char *line, int *i, char **envp)
 	ptr = NULL;
 	first_num = *i;
 	temp = NULL;
+	if (line[*i] == 34)
+		return (ft_strdup(""));
 	while (line[*i])
 	{
 		if (line[*i] == 34)
@@ -248,8 +250,8 @@ void	ft_in_pipe(char *line, char **envp, t_tokken_list **tokken)
 			ft_lstadd_back(tokken, ft_lstnew(ft_single_qoute_check(line, &i)));
 		else if (line[i] == 34) // double_qoute
 			ft_lstadd_back(tokken, ft_lstnew(ft_double_qoute_check(line, &i, envp)));
-		// else if (line[i] == '$')
-		// 	ft_lstadd_back(tokken, ft_lstnew(ft_export_ptr(line, &i, envp)));
+		else if (line[i] == '$')
+			ft_lstadd_back(tokken, ft_lstnew(ft_export_ptr(line, &i, envp)));
 		else if (line[i] == '|')
 			ft_lstadd_back(tokken, ft_lstnew(ft_strdup("|")));
 		else if (ft_is_alpha(line[i]) || ft_is_digit(line[i]))
@@ -270,7 +272,7 @@ void	ft_tokenizer(char *line, char **envp)
 	t_flag	flag;
 	t_tokken_list	*tokken;
 	t_tokken_list	*lst;
-
+	
 	tokken = NULL;
 	ft_qoute_check(line, envp, &flag);
 	write(1, "\n", 1);
