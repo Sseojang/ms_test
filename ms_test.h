@@ -107,7 +107,6 @@ char	*find_path(char *argv, const char *env);
 void	ft_val_set(t_tokken_list *tokken, t_val *val);
 void	error(char *s, int num);
 void	execute_cmd(t_tokken_list *tokken, char **envp);
-void	ft_redir(t_tokken_list *tokken, t_val *val);
 void	ft_paser_manager(t_tokken_list *tokken, char **envp);
 void	free_path(char **paths);
 
@@ -120,5 +119,6 @@ void	ft_find_cmd(t_tokken_list *tokken, t_val *val);
 void	ft_dup(t_val *val, char **envp, int *pipe);
 void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd);
 void	ft_find_redir(t_tokken_list **tokken, t_val *val);
+int	ft_next_pipe(t_tokken_list **tokken);
 
 #endif /* MS_TEST_H*/

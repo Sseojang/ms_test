@@ -1,0 +1,43 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../pipex"
+		},
+		{
+			"path": "../../../Subject/1./LIBFT"
+		},
+		{
+			"path": "../../../Subject/3./push_swap"
+		},
+		{
+			"path": "../../../ms_bac"
+		},
+		{
+			"path": "../../minishelllllllllllll"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"get_next_line.h": "c",
+			"stdio.h": "c",
+			"TT.C": "cpp",
+			"mini_talk.h": "c",
+			"signal.h": "c",
+			"stdlib.h": "c",
+			"unistd.h": "c",
+			"stdarg.h": "c",
+			"push_swap.h": "c",
+			"fdf.h": "c",
+			"philo.h": "c",
+			"time.h": "c",
+			"ms_test.h": "c",
+			"readline.h": "c",
+			"history.h": "c",
+			"pipex.h": "c",
+			"string.h": "c"
+		}
+	}
+}

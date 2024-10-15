@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/15 16:52:18 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/15 20:58:47 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	ft_val_set(t_tokken_list *tokken, t_val *val)
 {
 	val->fd_in = -1;
 	val->fd_out = -1;
-	val->prev_pipe = -1;
+	//val->prev_pipe = -1;
 	//val->heredoc_fd = -1;
 	//val->tokken_len = ft_lst_len(tokken);
 }
@@ -283,6 +283,7 @@ void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd)
 		if (lst->content && ft_strncmp(lst->content, "|", 1) == 0)
 		{
 			val->fd_out = pipefd[1];
+			val->pipe_flag = 1;
 			//close(pipefd[0]);
 			return ;
 		}
@@ -299,6 +300,7 @@ void	ft_dup(t_val *val, char **envp, int *pipefd)
 		exit(EXIT_FAILURE);
 	if (val->fd_in != -1)
 	{
+		close(pipefd[1]);
 		if (dup2(val->fd_in, STDIN_FILENO) == -1)
 			error("int dup2 failed", 2);
 		close(pipefd[0]);
@@ -306,6 +308,7 @@ void	ft_dup(t_val *val, char **envp, int *pipefd)
 	}
 	if (val->fd_out != -1)
 	{
+		close(pipefd[0]);
 		if (dup2(val->fd_out, STDOUT_FILENO) == -1)
 			error("out dup2 failed", 2);
 		close(pipefd[1]);
@@ -329,19 +332,28 @@ void	ft_find_cmd(t_tokken_list *tokken, t_val *val)
 	}
 }
 
+int	ft_next_pipe(t_tokken_list **tokken)
+{
+	while (*tokken && (*tokken)->next != NULL)
+	{
+		if ((*tokken)->content && ft_strncmp((*tokken)->content, "|", 1) == 0)
+			return (1);
+		(*tokken) = (*tokken)->next;
+	}
+	return (0);
+}
+
 void ft_paser_manager(t_tokken_list *tokken, char **envp)
 {
 	pid_t pid;
 	t_val val;
 	int pipefd[2];
-	t_tokken_list	*lst;
 
 	if (pipe(pipefd) == -1)
 		error("pipe failed", 1);
-	ft_val_set(tokken, &val);
-	//ft_heredoc(tokken); val char *
 	while (tokken)
 	{
+		ft_val_set(tokken, &val);
 		ft_find_pipe(tokken, &val, pipefd);
 		ft_find_redir(&tokken, &val);
 		ft_find_cmd(tokken, &val);
@@ -354,22 +366,21 @@ void ft_paser_manager(t_tokken_list *tokken, char **envp)
 		}
 		else
 		{
-			if (val.fd_in != -1)
-				close(val.fd_in);
-			if (val.fd_out != -1)
-				close(val.fd_out);
-			val.fd_in = pipefd[0];
-			pipefd[0] = -1;
-			pipefd[1] = -1;
-			close(pipefd[0]);
-			close(pipefd[1]);
+			if (ft_next_pipe(&tokken))
+			{
+				close(pipefd[1]);
+				if (dup2(pipefd[0], STDIN_FILENO) == -1)
+				{
+					printf("%s\n", val.cmd->content);
+					error("pipe dup2 error", 2);
+				}
+				close(pipefd[0]);
+			}
 		}
-		while (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) != 0)
-			tokken = tokken->next;
-		if (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) == 0)
+		// while (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) != 0)
+		// 	tokken = tokken->next;
+		// if (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) == 0)
 			tokken = tokken->next;
 	}
-	if (val.fd_in != -1)
-		close(val.fd_in);
 	while (wait(NULL) > 0);
 }

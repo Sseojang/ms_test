@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                        "-fdiagnostics-color=always",
+                        "-g",
+                        "${workspaceFolder}/ft_export.c",
+                        "${workspaceFolder}/ft_libft.c",
+                        "${workspaceFolder}/ft_lst_util.c",
+                        "${workspaceFolder}/ft_paser.c",
+                        "${workspaceFolder}/ft_qoute.c",
+                        "${workspaceFolder}/ft_split_utils.c",
+                        "${workspaceFolder}/ft_split.c",
+                        "${workspaceFolder}/ft_tokenizer.c",
+                        "${workspaceFolder}/ft_utils.c",
+                        "${workspaceFolder}/main.c",
+                        "-o",
+                        "${workspaceFolder}/minishell",
+                        "-L${workspaceFolder}/.local/lib",
+                        "-lreadline"
+                    ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "compiler: /usr/bin/gcc"
+        }
+    ]
+}

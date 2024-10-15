@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 19:02:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/14 19:09:32 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/15 20:08:56 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@
 // 10 - 6 + 2 = 
 int main(int ac, char **av, char **envp)
 {
-	char *line;
+	char	*line;
+	char	*temp;
 
 	line = NULL;
 	(void)ac;
@@ -35,6 +36,7 @@ int main(int ac, char **av, char **envp)
 			ft_tokenizer(line, envp);
 		add_history(line);
 		free(line);
+		line = NULL;
 	}
 	return (0);
 }
