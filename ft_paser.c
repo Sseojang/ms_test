@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 19:08:57 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/16 22:43:11 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,22 @@ void	ft_paser_func(t_tokken_list **tokken, t_val *val, int *pipefd)
 	ft_find_cmd(*tokken, val);
 }
 
-void ft_paser_manager(t_tokken_list *tokken, char **envp)
+void	ft_paser_manager(t_tokken_list *tokken, char **envp)
 {
 	pid_t pid;
 	t_val val;
 	int pipefd[2] = {-1, -1};
 	int prev_pipe = -1;
 	int status;
+	int	here_flag;
 
+	here_flag = 0;
+	if (!here_flag)
+	{
+		val.doc_num = 0;
+		ft_heredoc(&tokken, &val);
+		here_flag++;
+	}
 	while (tokken)
 	{
 		if (ft_next_pipe(tokken))
@@ -53,11 +61,7 @@ void ft_paser_manager(t_tokken_list *tokken, char **envp)
 			}
 			if (pipefd[0] != -1)
 				close(pipefd[0]);
-			if (ft_next_pipe(tokken))
-				ft_dup(&val, envp, pipefd);
-			else
-				ft_dup(&val, envp, NULL);
-			exit(1);
+			ft_dup(&val, envp, pipefd);
 		}
 		else
 		{
@@ -69,7 +73,6 @@ void ft_paser_manager(t_tokken_list *tokken, char **envp)
 		}
 		while (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) != 0)
 		{
-			printf("test here : {%s}\n", tokken->content);
 			tokken = tokken->next;
 		}
 		if (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) == 0)

@@ -36,7 +36,9 @@ typedef struct s_val
 	int	heredoc_fd;
 	int	tokken_len;
 	int	redir_flag;
-	int tmp_out;
+	int	tmp_out;
+	char	*heredoc;
+	int		doc_num;
 	t_tokken_list	*cmd;
 }			t_val;
 
@@ -101,7 +103,6 @@ void	ft_print_export(char *temp, char **envp);
 int		ft_export_check(char *line, int i, char **envp);
 
 //ft_paser
-int		ft_lst_len(t_tokken_list *tokken);
 char	*store_path(char **envp);
 char	*find_path(char *argv, const char *env);
 void	ft_val_set(t_tokken_list *tokken, t_val *val);
@@ -114,11 +115,20 @@ void	free_path(char **paths);
 void	ft_redir_open(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
 void	ft_redir_out(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
 void	ft_redir_add(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
+void	ft_redir_here(t_tokken_list *lst, t_val *val, t_tokken_list **tokken);
 
 void	ft_find_cmd(t_tokken_list *tokken, t_val *val);
 void	ft_dup(t_val *val, char **envp, int *pipe);
 void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd);
 void	ft_find_redir(t_tokken_list **tokken, t_val *val);
 int	ft_next_pipe(t_tokken_list *tokken);
+
+//heredoc
+void	ft_heredoc(t_tokken_list **tokken, t_val *val);
+void	ft_push_doc(t_tokken_list **tokken, t_val *val);
+
+//ft_itoa
+static int	ft_ditcheck(int n);
+char	*ft_itoa(int n);
 
 #endif /* MS_TEST_H*/

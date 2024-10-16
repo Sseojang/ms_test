@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/07 17:25:52 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/15 18:19:27 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/16 21:33:47 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,6 +272,7 @@ void	ft_tokenizer(char *line, char **envp)
 	t_flag	flag;
 	t_tokken_list	*tokken;
 	t_tokken_list	*lst;
+	t_val	val;
 	
 	tokken = NULL;
 	ft_qoute_check(line, envp, &flag);

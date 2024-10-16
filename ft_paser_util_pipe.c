@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 16:08:54 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 19:10:10 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/16 23:06:34 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd)
 	lst = tokken;
 	while (lst)
 	{
+		//printf("{%s} ", lst->content);
 		if (lst->content && ft_strncmp(lst->content, "|", 1) == 0)
 		{
 			val->fd_out = pipefd[1];
