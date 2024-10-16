@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 16:08:54 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 17:06:44 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/16 19:10:10 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,20 @@ void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd)
 	}
 }
 
-int	ft_next_pipe(t_tokken_list **tokken)
+int	ft_next_pipe(t_tokken_list *tokken)
 {
-	while (*tokken && (*tokken)->next != NULL)
+	t_tokken_list	*head;
+
+	head = tokken;
+	while (tokken && tokken->next != NULL)
 	{
-		if ((*tokken)->content && ft_strncmp((*tokken)->content, "|", 1) == 0)
+		if (tokken->content && ft_strncmp(tokken->content, "|", 1) == 0)
+		{
+			tokken = head;
 			return (1);
-		(*tokken) = (*tokken)->next;
+		}
+		tokken = tokken->next;
 	}
+	tokken = head;
 	return (0);
 }

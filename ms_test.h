@@ -119,6 +119,6 @@ void	ft_find_cmd(t_tokken_list *tokken, t_val *val);
 void	ft_dup(t_val *val, char **envp, int *pipe);
 void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd);
 void	ft_find_redir(t_tokken_list **tokken, t_val *val);
-int	ft_next_pipe(t_tokken_list **tokken);
+int	ft_next_pipe(t_tokken_list *tokken);
 
 #endif /* MS_TEST_H*/
