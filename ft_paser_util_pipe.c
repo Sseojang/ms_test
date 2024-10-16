@@ -1,44 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_paser_util_pipe.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/09 19:02:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 17:53:33 by seojang          ###   ########.fr       */
+/*   Created: 2024/10/16 16:08:54 by seojang           #+#    #+#             */
+/*   Updated: 2024/10/16 17:06:44 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ms_test.h"
 
-// void	handler()
-// {
-// 	exit(0);
-// }
-
-int main(int ac, char **av, char **envp)
+void	ft_find_pipe(t_tokken_list *tokken, t_val *val, int *pipefd)
 {
-	char	*line;
-	char	*temp;
+	t_tokken_list	*lst;
 
-	line = NULL;
-	(void)ac;
-	(void)av;
-	while (1)
+	lst = tokken;
+	while (lst)
 	{
-		line = readline("minishell>");
-		add_history(line);
-		// if (!line)
-		// 	break ;
-
-		if (line)
+		if (lst->content && ft_strncmp(lst->content, "|", 1) == 0)
 		{
-			printf("test {%s}\n", line);
-			ft_tokenizer(line, envp);
-			free(line);
-			line = NULL;
+			val->fd_out = pipefd[1];
+			return ;
 		}
+		lst = lst->next;
+	}
+}
+
+int	ft_next_pipe(t_tokken_list **tokken)
+{
+	while (*tokken && (*tokken)->next != NULL)
+	{
+		if ((*tokken)->content && ft_strncmp((*tokken)->content, "|", 1) == 0)
+			return (1);
+		(*tokken) = (*tokken)->next;
 	}
 	return (0);
 }

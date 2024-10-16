@@ -1,85 +1,44 @@
-void ft_paser_manager(t_tokken_list *tokken, char **envp)
+void    ft_paser_manager(t_tokken_list *tokken, char **envp)
 {
     pid_t pid;
     t_val val;
     int pipefd[2];
-    int prev_pipe = -1;
-    int is_last_command;
+    int status;
+    int last_pid = -1;
 
+    if (pipe(pipefd) == -1)
+        error("pipe failed", 1);
     while (tokken)
     {
-        ft_val_set(tokken, &val);
-        
-        is_last_command = !ft_next_pipe(&tokken);
-
-        if (!is_last_command && pipe(pipefd) == -1)
-            error("pipe failed", 1);
-
-        ft_find_redir(&tokken, &val);
-        ft_find_cmd(tokken, &val);
-
+        ft_paser_func(&tokken, &val, pipefd);
         pid = fork();
         if (pid < 0)
-        {
             error("Fork error", 1);
-        }
         else if (pid == 0)
-        {
-            // Child process
-            if (prev_pipe != -1)
-            {
-                dup2(prev_pipe, STDIN_FILENO);
-                close(prev_pipe);
-            }
-            if (!is_last_command)
-            {
-                dup2(pipefd[1], STDOUT_FILENO);
-                close(pipefd[1]);
-            }
-            
-            if (!is_last_command)
-                close(pipefd[0]);
-
-            if (val.fd_in != -1)
-            {
-                dup2(val.fd_in, STDIN_FILENO);
-                close(val.fd_in);
-            }
-            if (val.fd_out != -1)
-            {
-                dup2(val.fd_out, STDOUT_FILENO);
-                close(val.fd_out);
-            }
-
-            execute_cmd(val.cmd, envp);
-            exit(EXIT_FAILURE);  // In case execute_cmd fails
-        }
+            ft_dup(&val, envp, pipefd);
         else
         {
-            // Parent process
-            if (prev_pipe != -1)
-                close(prev_pipe);
-            
-            if (!is_last_command)
+            if (ft_next_pipe(&tokken))
             {
-                prev_pipe = pipefd[0];
                 close(pipefd[1]);
+                if (dup2(pipefd[0], STDIN_FILENO) == -1)
+                    error("pipe dup2 error", 2);
+                close(pipefd[0]);
             }
             else
             {
-                prev_pipe = -1;
+                close(pipefd[0]);
+                close(pipefd[1]);
             }
-
-            // Move to the next command
-            while (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) != 0)
-                tokken = tokken->next;
-            if (tokken && tokken->content && ft_strncmp(tokken->content, "|", 1) == 0)
-                tokken = tokken->next;
+            last_pid = pid;  // 마지막 자식 프로세스의 PID를 저장
         }
+        tokken = tokken->next;
     }
-
-    // Close the last pipe and wait for all children
-    if (prev_pipe != -1)
-        close(prev_pipe);
+    
+    // 마지막 자식 프로세스가 종료될 때까지 기다림
+    if (last_pid != -1)
+        waitpid(last_pid, &status, 0);
+    
+    // 나머지 자식 프로세스들이 종료되었는지 확인
     while (wait(NULL) > 0);
 }
