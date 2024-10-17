@@ -126,6 +126,8 @@ int	ft_next_pipe(t_tokken_list *tokken);
 //heredoc
 void	ft_heredoc(t_tokken_list **tokken, t_val *val);
 void	ft_push_doc(t_tokken_list **tokken, t_val *val);
+void	ft_first_heredoc(t_tokken_list **tokken, t_val *val);
+void	ft_push_first_doc(t_tokken_list **tokken, t_val *val);
 
 //ft_itoa
 static int	ft_ditcheck(int n);

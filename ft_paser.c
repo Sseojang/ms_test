@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 22:43:11 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/17 22:56:30 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ void	ft_paser_manager(t_tokken_list *tokken, char **envp)
 	if (!here_flag)
 	{
 		val.doc_num = 0;
-		ft_heredoc(&tokken, &val);
+		if (!ft_strncmp(tokken->content, "<<", ft_strlen(tokken->content)))
+			ft_first_heredoc(&tokken, &val);
+		else
+			ft_heredoc(&tokken, &val);
 		here_flag++;
 	}
 	while (tokken)

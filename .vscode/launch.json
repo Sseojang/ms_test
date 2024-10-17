@@ -45,7 +45,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/seojang/minishell_test/ms_test",
-      "program": "/home/seojang/minishell_test/ms_test/build/Debug/outDebug",
+      "program": "/home/seojang/minishell_test/ms_test/minishell",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 16:15:18 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 18:19:32 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/17 18:07:55 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,27 +42,21 @@ void	ft_dup(t_val *val, char **envp, int *pipefd)
 		exit(EXIT_FAILURE);
 	if (val->fd_in != -1)
 	{
-	//	printf("print5 : {%d}\n", pipefd[1]);
 		close(pipefd[1]);
 		if (dup2(val->fd_in, STDIN_FILENO) == -1)
 			error("in dup2 failed", 2);
-	//	printf("print6 : {%d}\n", pipefd[0]);
 		close(pipefd[0]);
-	//	printf("print7 : {%d}\n", val->fd_out);
 		close(val->fd_in);
 	}
+	printf("before dup2 fd_out = {%d}\n", val->fd_out);
 	if (val->fd_out != -1)
 	{
-	//	printf("print8 : {%d}\n", pipefd[0]);
 		close(pipefd[0]);
 		if (dup2(val->fd_out, STDOUT_FILENO) == -1)
 			error("out dup2 failed", 2);
-	//	printf("print9 : {%d}\n", pipefd[1]);
 		close(pipefd[1]);
-	//	printf("print10 : {%d}\n", val->fd_out);
 		close(val->fd_out);
 	}
-	//ft_check_bulitin(val->cmd, envp);
 	execute_cmd(val->cmd, envp);
 	exit(EXIT_FAILURE);
 }

@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/09 19:02:13 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 17:53:33 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/17 17:59:53 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ int main(int ac, char **av, char **envp)
 
 		if (line)
 		{
-			printf("test {%s}\n", line);
 			ft_tokenizer(line, envp);
 			free(line);
 			line = NULL;

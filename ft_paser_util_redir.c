@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 16:11:47 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/16 23:03:06 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/17 18:07:49 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void	ft_redir_out(t_tokken_list *lst, t_val *val, t_tokken_list **tokken)
 	if ( !file || !ft_strncmp(file, "|", 1))
 		error("redir error", 1);
 	val->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	printf("outfile fd_out = {%d}\n", val->fd_out);
 	if (val->fd_out < 0)
 		error("output error", 1);
 	while ((*tokken) && ft_strncmp((*tokken)->content, ">", 1))
@@ -145,13 +146,13 @@ void	ft_redir_here(t_tokken_list *lst, t_val *val, t_tokken_list **tokken)
 	if (!file || !ft_strncmp(file, "|", 1))
 		error("redir error", 1);
 	val->fd_in = open(file, O_RDONLY);
+	printf("before heredoc file fd_in = {%d}\n", val->fd_in);
 	if (val->fd_in < 0)
 		error("output error", 1);
 	while ((*tokken) && ft_strncmp((*tokken)->content, "<<", 2))
 		(*tokken) = (*tokken)->next;
 	while ((*tokken) && ft_strncmp((*tokken)->content, "|", 1))
 	{
-		printf("test here : {%s}\n", (*tokken)->content);
 		(*tokken)->content = ft_strdup("");
 		(*tokken) = (*tokken)->next;
 		i++;
