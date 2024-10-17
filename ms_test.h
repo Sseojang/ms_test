@@ -9,6 +9,7 @@
 # include <readline/history.h>
 # include <fcntl.h>
 # include <sys/wait.h>
+# include <signal.h>
 
 typedef struct s_flag
 {
@@ -132,5 +133,7 @@ void	ft_push_first_doc(t_tokken_list **tokken, t_val *val);
 //ft_itoa
 static int	ft_ditcheck(int n);
 char	*ft_itoa(int n);
+
+void	handler(int sig);
 
 #endif /* MS_TEST_H*/

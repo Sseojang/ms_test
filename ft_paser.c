@@ -6,7 +6,7 @@
 /*   By: seojang <seojang@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 16:08:50 by seojang           #+#    #+#             */
-/*   Updated: 2024/10/17 22:56:30 by seojang          ###   ########.fr       */
+/*   Updated: 2024/10/18 00:06:23 by seojang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,11 @@ void	ft_paser_manager(t_tokken_list *tokken, char **envp)
 				dup2(prev_pipe, STDIN_FILENO);
 				close(prev_pipe);
 			}
+			// if (pipefd[1] != -1)
+			// {
+			// 	dup2(pipefd[1], STDOUT_FILENO);
+			// 	close(pipefd[1]);
+			// }
 			if (pipefd[0] != -1)
 				close(pipefd[0]);
 			ft_dup(&val, envp, pipefd);
